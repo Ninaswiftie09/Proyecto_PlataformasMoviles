@@ -44,6 +44,7 @@ fun AppNavigator(navController: NavHostController) {
         composable("login_screen") { LoginScreen(navController) }
         composable("help_screen") { HelpScreen(navController) }
         composable("info_screen") { InfoScreen(navController) }
+        composable("register_screen"){ RegisterScreen(navController)}
     }
 }
 
@@ -151,7 +152,7 @@ fun LoginScreen(navController: NavHostController) {
                 modifier = Modifier
                     .background(Color(0xAA000000))
                     .padding(8.dp)
-                    .clickable { /* Navegar a registro */ }
+                    .clickable { navController.navigate("register_screen") }
             )
         }
     }
@@ -217,7 +218,143 @@ fun HelpScreen(navController: NavHostController) {
     }
 }
 
-@Composable
-fun InfoScreen(navController: NavHostController) {
 
-}
+@Composable
+fun RegisterScreen(navController: NavHostController) {
+    var name by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var phoneNumber by remember { mutableStateOf("") }
+    var bloodType by remember { mutableStateOf("") }
+    var emergencyContactName1 by remember { mutableStateOf("") }
+    var emergencyContactPhone1 by remember { mutableStateOf("") }
+    var emergencyContactName2 by remember { mutableStateOf("") }
+    var emergencyContactPhone2 by remember { mutableStateOf("") }
+
+    val bloodTypes = listOf("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-")
+    var expanded by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(text = "Crear Cuenta", fontSize = 30.sp, fontWeight = FontWeight.Bold)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextField(
+            value = name,
+            onValueChange = { name = it },
+            label = { Text("Nombre") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextField(
+            value = phoneNumber,
+            onValueChange = { phoneNumber = it },
+            label = { Text("Número de Teléfono") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Box(modifier = Modifier.fillMaxWidth()) {
+            TextField(
+                value = bloodType,
+                onValueChange = { }, // No permite editar directamente
+                label = { Text("Tipo de Sangre") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { expanded = true },
+                readOnly = true // Hace que el campo sea solo lectura
+            )
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                bloodTypes.forEach { type ->
+                    DropdownMenuItem(onClick = {
+                        bloodType = type
+                        expanded = false
+                    }) {
+                        Text(text = type)
+                    }
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextField(
+            value = emergencyContactName1,
+            onValueChange = { emergencyContactName1 = it },
+            label = { Text("Nombre de Emergencia 1   "         ) },
+                    modifier = Modifier.fillMaxWidth()
+            )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                TextField(
+                    value = emergencyContactPhone1,
+                    onValueChange = { emergencyContactPhone1 = it },
+                    label = { Text("Teléfono de Emergencia 1") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                TextField(
+                    value = emergencyContactName2,
+                    onValueChange = { emergencyContactName2 = it },
+                    label = { Text("Nombre de Emergencia 2") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                TextField(
+                    value = emergencyContactPhone2,
+                    onValueChange = { emergencyContactPhone2 = it },
+                    label = { Text("Teléfono de Emergencia 2") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+                        // Lógica para registrar la cuenta (por el momento, solo regresar a la página de inicio)
+                        navController.navigate("welcome_screen")
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = "Registrar")
+                }
+            }
+    }
+
+    @Composable
+    fun InfoScreen(navController: NavHostController) {
+        // Lógica para la pantalla de información
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = "Información", fontSize = 30.sp, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(text = "Aquí puedes proporcionar información sobre tu aplicación.", textAlign = TextAlign.Center)
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = { navController.navigate("welcome_screen") }) {
+                Text(text = "Regresar")
+            }
+        }
+    }
+
