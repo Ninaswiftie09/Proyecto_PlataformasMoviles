@@ -69,5 +69,4 @@ dependencies {
     implementation ("androidx.navigation:navigation-compose:2.5.3")
     implementation ("androidx.compose.material:material:1.0.5")
 
-
 }
