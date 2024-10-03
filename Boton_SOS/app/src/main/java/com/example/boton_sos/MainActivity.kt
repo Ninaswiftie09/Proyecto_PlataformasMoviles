@@ -45,6 +45,7 @@ fun AppNavigator(navController: NavHostController) {
         composable("help_screen") { HelpScreen(navController) }
         composable("info_screen") { InfoScreen(navController) }
         composable("register_screen"){ RegisterScreen(navController)}
+         composable("emergency_numbers_screen") { EmergencyNumbersScreen(navController) }
     }
 }
 
