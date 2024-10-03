@@ -425,11 +425,14 @@ fun HospitalsScreen(navController: NavHostController) {
             .fillMaxSize()
             .background(Color.White)
     ) {
+
         Image(
             painter = painterResource(id = R.drawable.mapa),
             contentDescription = "Mapa",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.FillBounds
+            modifier = Modifier
+                .size(450.dp)
+                .align(Alignment.Center),
+            contentScale = ContentScale.Crop
         )
 
         Column(
@@ -439,8 +442,8 @@ fun HospitalsScreen(navController: NavHostController) {
             verticalArrangement = Arrangement.Top
         ) {
             Text(
-                text = "Hospitales",
-                fontSize = 30.sp,
+                text = "Hospitales Cercanos",
+                fontSize = 40.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
                 modifier = Modifier.padding(bottom = 16.dp)
@@ -460,6 +463,7 @@ fun HospitalsScreen(navController: NavHostController) {
         }
     }
 }
+
 
 @Composable
 fun Background() {
