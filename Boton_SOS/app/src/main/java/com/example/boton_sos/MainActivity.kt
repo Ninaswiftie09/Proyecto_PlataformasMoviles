@@ -7,8 +7,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,7 +41,9 @@ class MainActivity : ComponentActivity() {
 fun AppNavigator(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "welcome_screen") {
         composable("welcome_screen") { WelcomeScreen(navController) }
-        composable("login_screen") { LoginScreen() }
+        composable("login_screen") { LoginScreen(navController) }
+        composable("help_screen") { HelpScreen(navController) }
+        composable("info_screen") { InfoScreen(navController) }
     }
 }
 
@@ -50,7 +53,7 @@ fun WelcomeScreen(navController: NavHostController) {
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF000000))
-            .clickable { navController.navigate("login_screen") },
+            .clickable { navController.navigate("login_screen") }, // Navegar a "login_screen"
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -79,19 +82,17 @@ fun WelcomeScreen(navController: NavHostController) {
 }
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
     ) {
-
         Image(
             painter = painterResource(id = R.drawable.zona1),
             contentDescription = "Fondo de zona",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
-
 
         Column(
             modifier = Modifier
@@ -136,7 +137,7 @@ fun LoginScreen() {
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(
-                onClick = { /* Acción de inicio de sesión */ },
+                onClick = { navController.navigate("help_screen") },
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -154,4 +155,69 @@ fun LoginScreen() {
             )
         }
     }
+}
+
+@Composable
+fun HelpScreen(navController: NavHostController) {
+    // Estado para controlar el menú desplegable
+    var menuExpanded by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+    ) {
+
+        IconButton(
+            onClick = { menuExpanded = !menuExpanded },
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(16.dp)
+        ) {
+            // Emoji para el índice (¡No a las imagenes!)
+            Text(
+                text = "❗",
+                fontSize = 30.sp,
+                color = Color.White
+            )
+        }
+
+        // Botón circular "HELP!" centrado (no funcional por el momento)
+        Button(
+            onClick = { /* No hacer nada al presionar */ },
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
+            modifier = Modifier
+                .size(250.dp)
+                .align(Alignment.Center),
+            shape = CircleShape
+        ) {
+            Text(
+                text = "HELP!",
+                fontSize = 50.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+        }
+
+
+        DropdownMenu(
+            expanded = menuExpanded,
+            onDismissRequest = { menuExpanded = false }
+        ) {
+            DropdownMenuItem(onClick = {}) {
+                Text("Cuenta")
+            }
+            DropdownMenuItem(onClick = {}) {
+                Text("Números de Emergencia")
+            }
+            DropdownMenuItem(onClick = {}) {
+                Text("Hospitales Cercanos")
+            }
+        }
+    }
+}
+
+@Composable
+fun InfoScreen(navController: NavHostController) {
+
 }
