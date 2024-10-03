@@ -46,6 +46,7 @@ fun AppNavigator(navController: NavHostController) {
         composable("info_screen") { InfoScreen(navController) }
         composable("register_screen"){ RegisterScreen(navController)}
          composable("emergency_numbers_screen") { EmergencyNumbersScreen(navController) }
+          composable("hospital_card") { HospitalCard(navController) }
     }
 }
 
@@ -371,7 +372,7 @@ fun EmergencyNumbersScreen(navController: NavHostController) {
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Top
     ) {
         Text(
             text = "Números de Emergencia",
@@ -388,8 +389,96 @@ fun EmergencyNumbersScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        Text(
+            text = "Contactos de Emergencia Personales",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        Text(text = "Contacto 1: Juan Pérez", fontSize = 20.sp)
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(text = "Teléfono: +502 1234-5678", fontSize = 20.sp)
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(text = "Contacto 2: María López", fontSize = 20.sp)
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(text = "Teléfono: +502 8765-4321", fontSize = 20.sp)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "Hospitales Cercanos",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        HospitalCard(
+            hospitalName = "Hospital General San Juan de Dios",
+            address = "6a. Avenida 8-09, Zona 1, Ciudad de Guatemala",
+            phone = "+502 2220-2424",
+            imageResource = R.drawable.hospital_1
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        HospitalCard(
+            hospitalName = "Hospital Roosevelt",
+            address = "Calzada Roosevelt, Zona 11, Ciudad de Guatemala",
+            phone = "+502 2320-2121",
+            imageResource = R.drawable.hospital_2
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        HospitalCard(
+            hospitalName = "Hospital Herrera Llerandi",
+            address = "2a. Calle 7-27, Zona 10, Ciudad de Guatemala",
+            phone = "+502 2384-5959",
+            imageResource = R.drawable.hospital_3
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Button(onClick = { navController.navigate("welcome_screen") }) {
             Text(text = "Regresar")
+        }
+    }
+}
+
+@Composable
+fun HospitalCard(hospitalName: String, address: String, phone: String, imageResource: Int) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        elevation = 4.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = imageResource),
+                contentDescription = hospitalName,
+                modifier = Modifier
+                    .size(64.dp)
+                    .padding(end = 16.dp)
+            )
+
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = hospitalName, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Text(text = address, fontSize = 16.sp)
+                Text(text = "Teléfono: $phone", fontSize = 16.sp)
+            }
+        }
+    }
+}
+
         }
     }
 }
