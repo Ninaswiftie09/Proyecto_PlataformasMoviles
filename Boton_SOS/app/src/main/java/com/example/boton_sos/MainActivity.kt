@@ -161,7 +161,6 @@ fun LoginScreen(navController: NavHostController) {
 
 @Composable
 fun HelpScreen(navController: NavHostController) {
-    // Estado para controlar el menú desplegable
     var menuExpanded by remember { mutableStateOf(false) }
 
     Box(
@@ -176,7 +175,6 @@ fun HelpScreen(navController: NavHostController) {
                 .align(Alignment.TopStart)
                 .padding(16.dp)
         ) {
-            // Emoji para el índice (¡No a las imagenes!)
             Text(
                 text = "❗",
                 fontSize = 30.sp,
@@ -184,9 +182,8 @@ fun HelpScreen(navController: NavHostController) {
             )
         }
 
-        // Botón circular "HELP!" centrado (no funcional por el momento)
         Button(
-            onClick = { /* No hacer nada al presionar */ },
+            onClick = { },
             colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
             modifier = Modifier
                 .size(250.dp)
@@ -201,23 +198,32 @@ fun HelpScreen(navController: NavHostController) {
             )
         }
 
-
         DropdownMenu(
             expanded = menuExpanded,
             onDismissRequest = { menuExpanded = false }
         ) {
-            DropdownMenuItem(onClick = {}) {
+            DropdownMenuItem(onClick = {
+                navController.navigate("info_screen")
+                menuExpanded = false
+            }) {
                 Text("Cuenta")
             }
-            DropdownMenuItem(onClick = {}) {
+            DropdownMenuItem(onClick = {
+                navController.navigate("emergency_numbers_screen")
+                menuExpanded = false
+            }) {
                 Text("Números de Emergencia")
             }
-            DropdownMenuItem(onClick = {}) {
+            DropdownMenuItem(onClick = {
+                navController.navigate("help_screen") 
+                menuExpanded = false
+            }) {
                 Text("Hospitales Cercanos")
             }
         }
     }
 }
+
 
 
 @Composable

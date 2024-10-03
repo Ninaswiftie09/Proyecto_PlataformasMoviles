@@ -20,5 +20,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Boton_SOS"
-include(":app")
+include("app")
  
