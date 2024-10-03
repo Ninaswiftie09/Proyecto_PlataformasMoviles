@@ -357,4 +357,32 @@ fun RegisterScreen(navController: NavHostController) {
             }
         }
     }
+@Composable
+fun EmergencyNumbersScreen(navController: NavHostController) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Números de Emergencia",
+            fontSize = 30.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
 
+        Text(text = "Policía: 911", fontSize = 20.sp)
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = "Bomberos: 100", fontSize = 20.sp)
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = "Ambulancia: 112", fontSize = 20.sp)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(onClick = { navController.navigate("welcome_screen") }) {
+            Text(text = "Regresar")
+        }
+    }
+}
