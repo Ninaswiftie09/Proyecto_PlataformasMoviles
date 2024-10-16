@@ -24,11 +24,36 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.boton_sos.ui.theme.Boton_SOSTheme
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import org.json.JSONObject
+
 
 // MainActivity: Configuración principal de la actividad, incluyendo la navegación
 class MainActivity : ComponentActivity() {
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+
+        } else {
+
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+
         setContent {
             Boton_SOSTheme {
                 val navController = rememberNavController()
@@ -414,27 +439,18 @@ fun EmergencyNumbersScreen(navController: NavHostController) {
     }
 }
 
-
 // HospitalsScreen: Pantalla de hospitales cercanos
 @Composable
 fun HospitalsScreen(navController: NavHostController) {
     var searchQuery by remember { mutableStateOf("") }
+    var hospitalsList by remember { mutableStateOf(listOf<String>()) }
+    val hospitalsApiClient = HospitalsApiClient()
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
-
-        Image(
-            painter = painterResource(id = R.drawable.mapa),
-            contentDescription = "Mapa",
-            modifier = Modifier
-                .size(450.dp)
-                .align(Alignment.Center),
-            contentScale = ContentScale.Crop
-        )
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -451,7 +467,21 @@ fun HospitalsScreen(navController: NavHostController) {
 
             TextField(
                 value = searchQuery,
-                onValueChange = {},
+                onValueChange = { query ->
+                    searchQuery = query
+                    if (query.isNotEmpty()) {
+                        hospitalsApiClient.fetchNearbyHospitals(lat = 14.6349, lon = -90.5069) { jsonResponse ->
+                            if (jsonResponse != null) {
+
+                                hospitalsList = processHospitalsResponse(jsonResponse, query)
+                            } else {
+                                hospitalsList = listOf("No se encontraron resultados.")
+                            }
+                        }
+                    } else {
+                        hospitalsList = emptyList()
+                    }
+                },
                 label = { Text("Buscar Hospital") },
                 modifier = Modifier.fillMaxWidth(),
                 colors = TextFieldDefaults.textFieldColors(
@@ -460,9 +490,37 @@ fun HospitalsScreen(navController: NavHostController) {
                     unfocusedIndicatorColor = Color.Gray
                 )
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+            hospitalsList.forEach { hospital ->
+                Text(
+                    text = hospital,
+                    fontSize = 20.sp,
+                    color = Color.Black,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+            }
         }
     }
 }
+
+
+fun processHospitalsResponse(jsonResponse: String, query: String): List<String> {
+    val hospitals = mutableListOf<String>()
+    val jsonArray = JSONObject(jsonResponse).getJSONArray("elements")
+    for (i in 0 until jsonArray.length()) {
+        val element = jsonArray.getJSONObject(i)
+        val tags = element.getJSONObject("tags")
+        val name = tags.optString("name", "Hospital sin nombre")
+
+
+        if (name.contains(query, ignoreCase = true)) {
+            hospitals.add(name)
+        }
+    }
+    return hospitals
+}
+
 
 
 @Composable
