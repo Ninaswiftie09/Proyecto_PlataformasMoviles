@@ -29,6 +29,8 @@ import android.content.pm.PackageManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import org.json.JSONObject
+import androidx.compose.ui.platform.LocalContext
+
 
 
 // MainActivity: Configuración principal de la actividad, incluyendo la navegación
@@ -444,7 +446,9 @@ fun EmergencyNumbersScreen(navController: NavHostController) {
 fun HospitalsScreen(navController: NavHostController) {
     var searchQuery by remember { mutableStateOf("") }
     var hospitalsList by remember { mutableStateOf(listOf<String>()) }
-    val hospitalsApiClient = HospitalsApiClient()
+    var connectionError by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val hospitalsApiClient = HospitalsApiClient(context)
 
     Box(
         modifier = Modifier
@@ -472,10 +476,11 @@ fun HospitalsScreen(navController: NavHostController) {
                     if (query.isNotEmpty()) {
                         hospitalsApiClient.fetchNearbyHospitals(lat = 14.6349, lon = -90.5069) { jsonResponse ->
                             if (jsonResponse != null) {
-
                                 hospitalsList = processHospitalsResponse(jsonResponse, query)
+                                connectionError = false
                             } else {
-                                hospitalsList = listOf("No se encontraron resultados.")
+                                connectionError = true
+                                hospitalsList = listOf()
                             }
                         }
                     } else {
@@ -492,6 +497,16 @@ fun HospitalsScreen(navController: NavHostController) {
             )
 
             Spacer(modifier = Modifier.height(16.dp))
+
+            if (connectionError) {
+                Text(
+                    text = "No hay conexión a internet",
+                    color = Color.Red,
+                    fontSize = 18.sp,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
+
             hospitalsList.forEach { hospital ->
                 Text(
                     text = hospital,
@@ -503,6 +518,7 @@ fun HospitalsScreen(navController: NavHostController) {
         }
     }
 }
+
 
 
 fun processHospitalsResponse(jsonResponse: String, query: String): List<String> {
