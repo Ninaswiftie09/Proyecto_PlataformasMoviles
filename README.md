@@ -1,6 +1,6 @@
 # Proyecto de Plataformas Móviles: Botón de Emergencia
 
-Este repositorio contiene el código y los documentos relacionados con el proyecto **Botón de Emergencia**. La aplicación está diseñada para facilitar el envío de mensajes de emergencia con la ubicación del usuario y mostrar los hospitales cercanos.
+Este repositorio contiene el código y los documentos relacionados con el proyecto **Botón de Emergencia**. La aplicación está diseñada para garantizar la seguridad del usuario utilizando su ubicación y mostrando los hospitales cercanos y los números de emergencia. 
 
 ## Estructura del Repositorio
 
@@ -9,6 +9,5 @@ Este repositorio contiene el código y los documentos relacionados con el proyec
 ## Integrantes del Proyecto
 
 - **Nina Nájera** - 231188
-- **Gabriel Quan** - 23479
 - **Mishell Ciprian** - 231169
 - **José Rodríguez** - 21060
