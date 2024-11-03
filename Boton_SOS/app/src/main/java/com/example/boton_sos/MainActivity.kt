@@ -30,6 +30,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import org.json.JSONObject
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.RoundedCornerShape
 
 
 
@@ -210,12 +212,12 @@ fun HelpScreen(navController: NavHostController) {
             Text(
                 text = "❗",
                 fontSize = 30.sp,
-                color = Color.White
+                color = Color.Red
             )
         }
 
         Button(
-            onClick = { },
+            onClick = { navController.navigate("emergency_numbers_screen") },
             colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
             modifier = Modifier
                 .size(250.dp)
@@ -232,25 +234,26 @@ fun HelpScreen(navController: NavHostController) {
 
         DropdownMenu(
             expanded = menuExpanded,
-            onDismissRequest = { menuExpanded = false }
+            onDismissRequest = { menuExpanded = false },
+            modifier = Modifier.background(Color.DarkGray)
         ) {
             DropdownMenuItem(onClick = {
                 navController.navigate("info_screen")
                 menuExpanded = false
             }) {
-                Text("Cuenta")
+                Text("Cuenta", color = Color.White)
             }
             DropdownMenuItem(onClick = {
                 navController.navigate("emergency_numbers_screen")
                 menuExpanded = false
             }) {
-                Text("Números de Emergencia")
+                Text("Números de Emergencia", color = Color.White)
             }
             DropdownMenuItem(onClick = {
                 navController.navigate("hospitals_screen")
                 menuExpanded = false
             }) {
-                Text("Hospitales Cercanos")
+                Text("Hospitales Cercanos", color = Color.White)
             }
         }
     }
@@ -274,47 +277,69 @@ fun RegisterScreen(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(horizontal = 24.dp, vertical = 16.dp)
+            .background(Color.White),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Top
     ) {
-        Text(text = "Crear Cuenta", fontSize = 30.sp, fontWeight = FontWeight.Bold)
+        Text(
+            text = "Crear Cuenta",
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF1E1E1E),
+            modifier = Modifier.padding(vertical = 16.dp)
+        )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         TextField(
             value = name,
             onValueChange = { name = it },
             label = { Text("Nombre") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color(0xFFF5F5F5),
+                focusedIndicatorColor = Color(0xFFE57373),
+                unfocusedIndicatorColor = Color(0xFFBDBDBD)
+            )
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         TextField(
             value = email,
             onValueChange = { email = it },
             label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color(0xFFF5F5F5),
+                focusedIndicatorColor = Color(0xFFE57373),
+                unfocusedIndicatorColor = Color(0xFFBDBDBD)
+            )
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         TextField(
             value = phoneNumber,
             onValueChange = { phoneNumber = it },
             label = { Text("Número de Teléfono") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color(0xFFF5F5F5),
+                focusedIndicatorColor = Color(0xFFE57373),
+                unfocusedIndicatorColor = Color(0xFFBDBDBD)
+            )
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentSize(Alignment.TopStart)
+                .background(Color(0xFFF5F5F5))
+                .padding(12.dp)
                 .clickable { expanded = !expanded }
         ) {
             Text(
                 text = if (bloodType.isEmpty()) "Tipo de Sangre" else bloodType,
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
                 color = if (bloodType.isEmpty()) Color.Gray else Color.Black
             )
         }
@@ -332,66 +357,113 @@ fun RegisterScreen(navController: NavHostController) {
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         TextField(
             value = emergencyContactName1,
             onValueChange = { emergencyContactName1 = it },
             label = { Text("Contacto de Emergencia 1") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color(0xFFF5F5F5),
+                focusedIndicatorColor = Color(0xFFE57373),
+                unfocusedIndicatorColor = Color(0xFFBDBDBD)
+            )
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         TextField(
             value = emergencyContactPhone1,
             onValueChange = { emergencyContactPhone1 = it },
             label = { Text("Teléfono 1") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color(0xFFF5F5F5),
+                focusedIndicatorColor = Color(0xFFE57373),
+                unfocusedIndicatorColor = Color(0xFFBDBDBD)
+            )
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         TextField(
             value = emergencyContactName2,
             onValueChange = { emergencyContactName2 = it },
             label = { Text("Contacto de Emergencia 2") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color(0xFFF5F5F5),
+                focusedIndicatorColor = Color(0xFFE57373),
+                unfocusedIndicatorColor = Color(0xFFBDBDBD)
+            )
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         TextField(
             value = emergencyContactPhone2,
             onValueChange = { emergencyContactPhone2 = it },
             label = { Text("Teléfono 2") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color(0xFFF5F5F5),
+                focusedIndicatorColor = Color(0xFFE57373),
+                unfocusedIndicatorColor = Color(0xFFBDBDBD)
+            )
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = { navController.navigate("login_screen") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFE57373))
         ) {
-            Text(text = "Registrar")
+            Text(text = "Registrar", color = Color.White, fontWeight = FontWeight.Bold)
         }
     }
 }
 
+
 // InfoScreen: Pantalla de información de la cuenta
 @Composable
 fun InfoScreen(navController: NavHostController) {
-    // Lógica para la pantalla de información
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color(0xFFB71C1C))
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Información", fontSize = 30.sp, fontWeight = FontWeight.Bold)
+        Text(
+            text = "Información",
+            fontSize = 32.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(8.dp)
+        )
+
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Aquí va la información del usuario.", textAlign = TextAlign.Center)
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = { navController.navigate("help_screen") }) {
-            Text(text = "Regresar")
+
+        Text(
+            text = "Aquí va la información del usuario.",
+            fontSize = 20.sp,
+            color = Color.White,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Button(
+            onClick = { navController.navigate("help_screen") },
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .border(2.dp, Color.White, shape = RoundedCornerShape(8.dp)),
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Text(text = "Regresar", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -409,39 +481,56 @@ fun EmergencyNumbersScreen(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
-            .background(Color.Black),
-        verticalArrangement = Arrangement.Top
+            .background(Color(0xFFB71C1C))
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = "Números de Emergencia",
-            fontSize = 30.sp,
+            fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White
+            color = Color.White,
+            modifier = Modifier.padding(8.dp)
         )
+
         Spacer(modifier = Modifier.height(16.dp))
 
-        emergencyNumbers.forEach { number ->
-            Text(
-                text = number,
-                fontSize = 20.sp,
-                color = Color.White,
-                modifier = Modifier.padding(vertical = 4.dp)
-            )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.Black.copy(alpha = 0.7f), shape = RoundedCornerShape(8.dp))
+                .border(2.dp, Color.White, RoundedCornerShape(8.dp))
+                .padding(16.dp)
+        ) {
+            emergencyNumbers.forEach { number ->
+                Text(
+                    text = number,
+                    fontSize = 22.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(32.dp))
 
         Button(
-            onClick = { navController.popBackStack() }, 
-            modifier = Modifier.fillMaxWidth()
+            onClick = { navController.popBackStack() },
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .border(2.dp, Color.White, shape = RoundedCornerShape(8.dp)),
+            shape = RoundedCornerShape(8.dp)
         ) {
-            Text(text = "Regresar", color = Color.White)
+            Text(text = "Regresar", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
 
-// HospitalsScreen: Pantalla de hospitales cercanos
+
 @Composable
 fun HospitalsScreen(navController: NavHostController) {
     var searchQuery by remember { mutableStateOf("") }
@@ -453,7 +542,7 @@ fun HospitalsScreen(navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(Color(0xFFB71C1C))
     ) {
         Column(
             modifier = Modifier
@@ -463,9 +552,9 @@ fun HospitalsScreen(navController: NavHostController) {
         ) {
             Text(
                 text = "Hospitales Cercanos",
-                fontSize = 40.sp,
+                fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black,
+                color = Color.White,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
@@ -487,12 +576,17 @@ fun HospitalsScreen(navController: NavHostController) {
                         hospitalsList = emptyList()
                     }
                 },
-                label = { Text("Buscar Hospital") },
-                modifier = Modifier.fillMaxWidth(),
+                label = { Text("Buscar Hospital", color = Color.Gray) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(2.dp, Color.White, shape = RoundedCornerShape(8.dp))
+                    .background(Color.Black.copy(alpha = 0.7f)),
                 colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.White,
+                    backgroundColor = Color.Transparent,
                     focusedIndicatorColor = Color.Red,
-                    unfocusedIndicatorColor = Color.Gray
+                    unfocusedIndicatorColor = Color.Gray,
+                    cursorColor = Color.White,
+                    textColor = Color.White
                 )
             )
 
@@ -501,8 +595,9 @@ fun HospitalsScreen(navController: NavHostController) {
             if (connectionError) {
                 Text(
                     text = "No hay conexión a internet",
-                    color = Color.Red,
+                    color = Color.Yellow,
                     fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
@@ -511,14 +606,17 @@ fun HospitalsScreen(navController: NavHostController) {
                 Text(
                     text = hospital,
                     fontSize = 20.sp,
-                    color = Color.Black,
-                    modifier = Modifier.padding(vertical = 4.dp)
+                    color = Color.White,
+                    modifier = Modifier
+                        .padding(vertical = 4.dp)
+                        .background(Color.Black.copy(alpha = 0.7f), shape = RoundedCornerShape(4.dp))
+                        .fillMaxWidth()
+                        .padding(8.dp)
                 )
             }
         }
     }
 }
-
 
 
 fun processHospitalsResponse(jsonResponse: String, query: String): List<String> {
