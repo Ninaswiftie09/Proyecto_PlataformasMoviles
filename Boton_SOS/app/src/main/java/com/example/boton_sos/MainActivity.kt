@@ -32,7 +32,9 @@ import org.json.JSONObject
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.RoundedCornerShape
-
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 
 
 // MainActivity: Configuración principal de la actividad, incluyendo la navegación
@@ -119,6 +121,9 @@ fun WelcomeScreen(navController: NavHostController) {
 // LoginScreen: Pantalla de login, con opciones de iniciar sesión o crear cuenta
 @Composable
 fun LoginScreen(navController: NavHostController) {
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -148,9 +153,10 @@ fun LoginScreen(navController: NavHostController) {
                     .padding(8.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
+
             TextField(
-                value = "",
-                onValueChange = {},
+                value = username,
+                onValueChange = { username = it },
                 label = { Text("Usuario") },
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.White,
@@ -160,18 +166,21 @@ fun LoginScreen(navController: NavHostController) {
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))
+
             TextField(
-                value = "",
-                onValueChange = {},
+                value = password,
+                onValueChange = { password = it },
                 label = { Text("Contraseña") },
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.White,
                     focusedIndicatorColor = Color.Red,
                     unfocusedIndicatorColor = Color.Gray
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = PasswordVisualTransformation()
             )
             Spacer(modifier = Modifier.height(16.dp))
+
             Button(
                 onClick = { navController.navigate("help_screen") },
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black),
@@ -180,6 +189,7 @@ fun LoginScreen(navController: NavHostController) {
                 Text(text = "Iniciar sesión", color = Color.White)
             }
             Spacer(modifier = Modifier.height(16.dp))
+
             Text(
                 text = "¿Aún no tienes cuenta?",
                 fontSize = 16.sp,
@@ -530,7 +540,6 @@ fun EmergencyNumbersScreen(navController: NavHostController) {
     }
 }
 
-
 @Composable
 fun HospitalsScreen(navController: NavHostController) {
     var searchQuery by remember { mutableStateOf("") }
@@ -634,8 +643,6 @@ fun processHospitalsResponse(jsonResponse: String, query: String): List<String> 
     }
     return hospitals
 }
-
-
 
 @Composable
 fun Background() {

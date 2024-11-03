@@ -10,9 +10,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="63eadfc8-fd8e-497a-85de-34b19e221733" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Boton_SOS/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/Boton_SOS/app/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Boton_SOS/app/src/main/java/com/example/boton_sos/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/Boton_SOS/app/src/main/java/com/example/boton_sos/MainActivity.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

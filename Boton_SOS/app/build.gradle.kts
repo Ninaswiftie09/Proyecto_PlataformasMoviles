@@ -69,6 +69,6 @@ dependencies {
     implementation ("androidx.navigation:navigation-compose:2.5.3")
     implementation ("androidx.compose.material:material:1.0.5")
     implementation ("com.squareup.okhttp3:okhttp:4.9.1")
-
+    implementation("com.google.android.gms:play-services-location:21.0.1")
 
 }
