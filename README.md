@@ -8,6 +8,6 @@ Este repositorio contiene el código y los documentos relacionados con el proyec
 
 ## Integrantes del Proyecto
 
-- **Nina Nájera** - 231188
+- **Nina Nájera** - 231088
 - **Mishell Ciprian** - 231169
 - **José Rodríguez** - 21060
