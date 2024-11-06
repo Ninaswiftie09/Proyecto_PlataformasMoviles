@@ -23,32 +23,46 @@ class HospitalsApiClient(private val context: Context) {
         }
     }
 
-    fun fetchNearbyHospitals(lat: Double, lon: Double, radius: Int = 5000, onResult: (String?) -> Unit) {
-        if (!isInternetAvailable()) {
-            onResult(null)
-            return
-        }
+   fun fetchNearbyHospitals(lat: Double, lon: Double, radius: Int = 5000, onResult: (List<String>?) -> Unit) {
+    if (!isInternetAvailable()) {
+        onResult(null)
+        return
+    }
 
-        val overpassUrl = "https://overpass-api.de/api/interpreter?data=[out:json];node[amenity=hospital](around:$radius,$lat,$lon);out;"
-        val request = Request.Builder()
-            .url(overpassUrl)
-            .build()
+    val overpassUrl = "https://overpass-api.de/api/interpreter?data=[out:json];node[amenity=hospital](around:$radius,$lat,$lon);out;"
+    val request = Request.Builder()
+        .url(overpassUrl)
+        .build()
 
-        Thread {
-            try {
-                val response: Response = client.newCall(request).execute()
-                if (response.isSuccessful) {
-                    val jsonResponse = response.body?.string()
-                    Log.d("OverpassAPI", jsonResponse ?: "No response")
-                    onResult(jsonResponse)
-                } else {
-                    Log.e("OverpassAPI", "Request failed with code: ${response.code}")
-                    onResult(null)
-                }
-            } catch (e: Exception) {
-                Log.e("OverpassAPI", "Error: ${e.message}")
+    Thread {
+        try {
+            val response: Response = client.newCall(request).execute()
+            if (response.isSuccessful) {
+                val jsonResponse = response.body?.string()
+                val hospitalNames = processHospitalsResponse(jsonResponse)
+                Log.d("OverpassAPI", jsonResponse ?: "No response")
+                onResult(hospitalNames)
+            } else {
+                Log.e("OverpassAPI", "Request failed with code: ${response.code}")
                 onResult(null)
             }
-        }.start()
+        } catch (e: Exception) {
+            Log.e("OverpassAPI", "Error: ${e.message}")
+            onResult(null)
+        }
+    }.start()
+}
+
+private fun processHospitalsResponse(jsonResponse: String?): List<String> {
+    val hospitals = mutableListOf<String>()
+    if (jsonResponse != null) {
+        val jsonArray = JSONObject(jsonResponse).getJSONArray("elements")
+        for (i in 0 until jsonArray.length()) {
+            val element = jsonArray.getJSONObject(i)
+            val tags = element.getJSONObject("tags")
+            val name = tags.optString("name", "Hospital sin nombre")
+            hospitals.add(name)
+        }
     }
+    return hospitals.take(5) 
 }
