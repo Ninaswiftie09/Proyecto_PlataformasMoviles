@@ -531,53 +531,14 @@ fun EmergencyNumbersScreen(navController: NavHostController) {
         }
     }
 }
-private lateinit var fusedLocationClient: FusedLocationProviderClient
-
-override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
-    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_REQUEST_CODE)
-    } else {
-        getUserLocation()
-    }
-}
-
-private fun getUserLocation() {
-    fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-        if (location != null) {
-            // Pasa la ubicación a la función de pantalla de hospitales
-            loadHospitalsScreen(location.latitude, location.longitude)
-        }
-    }
-}
-
-private fun loadHospitalsScreen(latitude: Double, longitude: Double) {
-    setContent {
-        HospitalsScreen(navController = rememberNavController(), latitude, longitude)
-    }
-}
 
 @Composable
-fun HospitalsScreen(navController: NavHostController, latitude: Double, longitude: Double) {
+fun HospitalsScreen(navController: NavHostController) {
+    var searchQuery by remember { mutableStateOf("") }
     var hospitalsList by remember { mutableStateOf(listOf<String>()) }
     var connectionError by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val hospitalsApiClient = HospitalsApiClient(context)
-
-    // Llama a la API al iniciar la pantalla
-    LaunchedEffect(Unit) {
-        hospitalsApiClient.fetchNearbyHospitals(lat = latitude, lon = longitude) { result ->
-            if (result != null) {
-                hospitalsList = result
-                connectionError = false
-            } else {
-                connectionError = true
-                hospitalsList = listOf()
-            }
-        }
-    }
 
     Box(
         modifier = Modifier
@@ -596,6 +557,38 @@ fun HospitalsScreen(navController: NavHostController, latitude: Double, longitud
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
                 modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            TextField(
+                value = searchQuery,
+                onValueChange = { query ->
+                    searchQuery = query
+                    if (query.isNotEmpty()) {
+                        hospitalsApiClient.fetchNearbyHospitals(lat = 14.6349, lon = -90.5069) { jsonResponse ->
+                            if (jsonResponse != null) {
+                                hospitalsList = processHospitalsResponse(jsonResponse, query)
+                                connectionError = false
+                            } else {
+                                connectionError = true
+                                hospitalsList = listOf()
+                            }
+                        }
+                    } else {
+                        hospitalsList = emptyList()
+                    }
+                },
+                label = { Text("Buscar Hospital", color = Color.Gray) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(2.dp, Color.White, shape = RoundedCornerShape(8.dp))
+                    .background(Color.Black.copy(alpha = 0.7f)),
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Red,
+                    unfocusedIndicatorColor = Color.Gray,
+                    cursorColor = Color.White,
+                    textColor = Color.White
+                )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
