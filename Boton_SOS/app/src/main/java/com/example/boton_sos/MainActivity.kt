@@ -295,6 +295,7 @@ fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel = 
     var emergencyContactPhone1 by remember { mutableStateOf("") }
     var emergencyContactName2 by remember { mutableStateOf("") }
     var emergencyContactPhone2 by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }
     val bloodTypes = listOf("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-")
     var expanded by remember { mutableStateOf(false) }
 
@@ -314,19 +315,32 @@ fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel = 
             modifier = Modifier.padding(vertical = 16.dp)
         )
 
+        Spacer(modifier = Modifier.height(8.dp))
+
         TextField(
             value = name,
             onValueChange = { name = it },
             label = { Text("Nombre") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color(0xFFF5F5F5),
+                focusedIndicatorColor = Color(0xFFE57373),
+                unfocusedIndicatorColor = Color(0xFFBDBDBD)
+            )
         )
         Spacer(modifier = Modifier.height(12.dp))
+
 
         TextField(
             value = email,
             onValueChange = { email = it },
             label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color(0xFFF5F5F5),
+                focusedIndicatorColor = Color(0xFFE57373),
+                unfocusedIndicatorColor = Color(0xFFBDBDBD)
+            )
         )
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -335,7 +349,12 @@ fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel = 
             onValueChange = { password = it },
             label = { Text("Contraseña") },
             visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color(0xFFF5F5F5),
+                focusedIndicatorColor = Color(0xFFE57373),
+                unfocusedIndicatorColor = Color(0xFFBDBDBD)
+            )
         )
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -343,23 +362,31 @@ fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel = 
             value = phoneNumber,
             onValueChange = { phoneNumber = it },
             label = { Text("Número de Teléfono") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color(0xFFF5F5F5),
+                focusedIndicatorColor = Color(0xFFE57373),
+                unfocusedIndicatorColor = Color(0xFFBDBDBD)
+            )
         )
         Spacer(modifier = Modifier.height(12.dp))
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { expanded = !expanded }
                 .background(Color(0xFFF5F5F5))
                 .padding(12.dp)
+                .clickable { expanded = !expanded }
         ) {
             Text(
                 text = if (bloodType.isEmpty()) "Tipo de Sangre" else bloodType,
                 color = if (bloodType.isEmpty()) Color.Gray else Color.Black
             )
         }
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
             bloodTypes.forEach { type ->
                 DropdownMenuItem(onClick = {
                     bloodType = type
@@ -369,13 +396,19 @@ fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel = 
                 }
             }
         }
+
         Spacer(modifier = Modifier.height(12.dp))
 
         TextField(
             value = emergencyContactName1,
             onValueChange = { emergencyContactName1 = it },
             label = { Text("Contacto de Emergencia 1") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color(0xFFF5F5F5),
+                focusedIndicatorColor = Color(0xFFE57373),
+                unfocusedIndicatorColor = Color(0xFFBDBDBD)
+            )
         )
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -383,7 +416,12 @@ fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel = 
             value = emergencyContactPhone1,
             onValueChange = { emergencyContactPhone1 = it },
             label = { Text("Teléfono 1") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color(0xFFF5F5F5),
+                focusedIndicatorColor = Color(0xFFE57373),
+                unfocusedIndicatorColor = Color(0xFFBDBDBD)
+            )
         )
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -391,7 +429,12 @@ fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel = 
             value = emergencyContactName2,
             onValueChange = { emergencyContactName2 = it },
             label = { Text("Contacto de Emergencia 2") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color(0xFFF5F5F5),
+                focusedIndicatorColor = Color(0xFFE57373),
+                unfocusedIndicatorColor = Color(0xFFBDBDBD)
+            )
         )
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -399,15 +442,34 @@ fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel = 
             value = emergencyContactPhone2,
             onValueChange = { emergencyContactPhone2 = it },
             label = { Text("Teléfono 2") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color(0xFFF5F5F5),
+                focusedIndicatorColor = Color(0xFFE57373),
+                unfocusedIndicatorColor = Color(0xFFBDBDBD)
+            )
         )
         Spacer(modifier = Modifier.height(24.dp))
 
+        if (errorMessage.isNotEmpty()) {
+            Text(text = errorMessage, color = Color.Red)
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
         Button(
             onClick = {
-                viewModel.register(email, password)
+                if (name.isEmpty() || email.isEmpty() || password.isEmpty() || phoneNumber.isEmpty() || bloodType.isEmpty() ||
+                    emergencyContactName1.isEmpty() || emergencyContactPhone1.isEmpty() || emergencyContactName2.isEmpty() || emergencyContactPhone2.isEmpty()) {
+                    errorMessage = "Por favor, llena todos los campos"
+                } else {
+                    errorMessage = ""
+                    viewModel.register(email, password) { uid ->
+                        viewModel.saveUserData(uid, name, phoneNumber, bloodType, emergencyContactName1, emergencyContactPhone1, emergencyContactName2, emergencyContactPhone2)
+                    }
+                }
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFE57373))
         ) {
             Text(text = "Registrar", color = Color.White)
         }
@@ -634,14 +696,4 @@ fun processHospitalsResponse(jsonResponse: String, query: String): List<String> 
         }
     }
     return hospitals
-}
-
-@Composable
-fun Background() {
-    Image(
-        painter = painterResource(id = R.drawable.zona1),
-        contentDescription = "Fondo de la aplicación",
-        modifier = Modifier.fillMaxSize(),
-        contentScale = ContentScale.Crop
-    )
 }
