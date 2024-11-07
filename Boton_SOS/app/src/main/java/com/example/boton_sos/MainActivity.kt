@@ -26,7 +26,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.boton_sos.ui.theme.Boton_SOSTheme
 import android.Manifest
 import android.content.pm.PackageManager
-import android.view.ContentInfo
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import org.json.JSONObject
@@ -37,6 +36,11 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import android.annotation.SuppressLint
+import androidx.activity.compose.rememberLauncherForActivityResult
+
 
 
 // MainActivity: Configuración principal de la actividad, incluyendo la navegación
@@ -485,8 +489,6 @@ fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel = 
     }
 }
 
-
-
 // InfoScreen: Pantalla de información de la cuenta
 @Composable
 fun InfoScreen(navController: NavHostController) {
@@ -595,13 +597,41 @@ fun EmergencyNumbersScreen(navController: NavHostController) {
     }
 }
 
+//HopitalsScreen: pantalla para mostrar los hospitales
 @Composable
 fun HospitalsScreen(navController: NavHostController) {
     var searchQuery by remember { mutableStateOf("") }
     var hospitalsList by remember { mutableStateOf(listOf<String>()) }
     var connectionError by remember { mutableStateOf(false) }
+    var latitude by remember { mutableStateOf("Unknown") }
+    var longitude by remember { mutableStateOf("Unknown") }
     val context = LocalContext.current
     val hospitalsApiClient = HospitalsApiClient(context)
+
+    val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()) { isGranted ->
+        if (isGranted) {
+            getLocation(fusedLocationClient) { lat, lon ->
+                latitude = lat
+                longitude = lon
+                if (searchQuery.isNotEmpty()) {
+                    hospitalsApiClient.fetchNearbyHospitals(lat = latitude.toDouble(), lon = longitude.toDouble()) { jsonResponse ->
+                        if (jsonResponse != null) {
+                            hospitalsList = processHospitalsResponse(jsonResponse, searchQuery)
+                            connectionError = false
+                        } else {
+                            connectionError = true
+                            hospitalsList = listOf()
+                        }
+                    }
+                }
+            }
+        } else {
+            latitude = "Permission Denied"
+            longitude = "Permission Denied"
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -626,8 +656,8 @@ fun HospitalsScreen(navController: NavHostController) {
                 value = searchQuery,
                 onValueChange = { query ->
                     searchQuery = query
-                    if (query.isNotEmpty()) {
-                        hospitalsApiClient.fetchNearbyHospitals(lat = 14.6349, lon = -90.5069) { jsonResponse ->
+                    if (query.isNotEmpty() && latitude != "Unknown" && longitude != "Unknown") {
+                        hospitalsApiClient.fetchNearbyHospitals(lat = latitude.toDouble(), lon = longitude.toDouble()) { jsonResponse ->
                             if (jsonResponse != null) {
                                 hospitalsList = processHospitalsResponse(jsonResponse, query)
                                 connectionError = false
@@ -678,6 +708,34 @@ fun HospitalsScreen(navController: NavHostController) {
                         .padding(8.dp)
                 )
             }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        when (PackageManager.PERMISSION_GRANTED) {
+            ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                getLocation(fusedLocationClient) { lat, lon ->
+                    latitude = lat
+                    longitude = lon
+                }
+            }
+            else -> {
+                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+        }
+    }
+}
+
+@SuppressLint("MissingPermission")
+private fun getLocation(
+    fusedLocationClient: FusedLocationProviderClient,
+    onLocationResult: (String, String) -> Unit
+) {
+    fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+        if (location != null) {
+            onLocationResult(location.latitude.toString(), location.longitude.toString())
+        } else {
+            onLocationResult("No location found", "No location found")
         }
     }
 }
