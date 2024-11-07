@@ -26,6 +26,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.boton_sos.ui.theme.Boton_SOSTheme
 import android.Manifest
 import android.content.pm.PackageManager
+import android.view.ContentInfo
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import org.json.JSONObject
@@ -215,8 +216,6 @@ fun LoginScreen(navController: NavHostController, viewModel: AuthViewModel = vie
     }
 }
 
-
-
 // HelpScreen: Pantalla del botón de emergencia, con un menú desplegable para navegar a otras pantallas
 @Composable
 fun HelpScreen(navController: NavHostController) {
@@ -329,7 +328,6 @@ fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel = 
             )
         )
         Spacer(modifier = Modifier.height(12.dp))
-
 
         TextField(
             value = email,
@@ -470,7 +468,7 @@ fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel = 
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFE57373))
-        ) {
+        )  {
             Text(text = "Registrar", color = Color.White)
         }
 
@@ -478,12 +476,15 @@ fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel = 
         authResult?.let {
             if (it.isSuccess) {
                 navController.navigate("login_screen")
+                viewModel.clearAuthResult()
             } else {
                 Text("Error al registrar: ${it.exceptionOrNull()?.message}")
+                viewModel.clearAuthResult()
             }
         }
     }
 }
+
 
 
 // InfoScreen: Pantalla de información de la cuenta
