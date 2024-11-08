@@ -8,12 +8,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import com.google.firebase.auth.AuthResult
+import android.util.Log
 
 
 class AuthViewModel(private val repository: AuthRepository = AuthRepository()) : ViewModel() {
 
     private val _authResult = MutableStateFlow<Result<AuthResult>?>(null)
     val authResult: StateFlow<Result<AuthResult>?> = _authResult
+
+    private val _userInfo = MutableStateFlow<Map<String, Any>?>(null)
+    val userInfo: StateFlow<Map<String, Any>?> = _userInfo
 
     fun register(email: String, password: String, onSuccess: (String) -> Unit) {
         viewModelScope.launch {
@@ -54,18 +58,44 @@ class AuthViewModel(private val repository: AuthRepository = AuthRepository()) :
         )
 
         db.collection("usuarios").document(uid).set(user)
-            .addOnSuccessListener {  }
+            .addOnSuccessListener {
+                Log.d("Firestore", "Datos de usuario guardados con éxito")
+            }
             .addOnFailureListener { e ->
+                Log.e("FirestoreError", "Error al guardar datos de usuario: ${e.message}")
             }
     }
 
     fun login(email: String, password: String) {
         viewModelScope.launch {
-            _authResult.value = repository.loginUser(email, password)
+            val result = repository.loginUser(email, password)
+            _authResult.value = result
+            result.onSuccess { authResult ->
+                val uid = authResult.user?.uid
+                if (uid != null) {
+                    fetchUserData(uid)
+                }
+            }
         }
     }
 
     fun clearAuthResult() {
         _authResult.value = null
+    }
+
+    fun fetchUserData(uid: String) {
+        val db = Firebase.firestore
+        db.collection("usuarios").document(uid).get()
+            .addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    _userInfo.value = document.data
+                    Log.d("Firestore", "Datos del usuario obtenidos: ${document.data}")
+                } else {
+                    Log.e("FirestoreError", "El documento no existe")
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("FirestoreError", "Error al obtener datos de usuario: ${exception.message}")
+            }
     }
 }

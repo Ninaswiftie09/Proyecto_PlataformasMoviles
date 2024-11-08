@@ -11,7 +11,7 @@
   <component name="ChangeListManager">
     <list default="true" id="63eadfc8-fd8e-497a-85de-34b19e221733" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Boton_SOS/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/Boton_SOS/app/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Boton_SOS/app/src/main/java/com/example/boton_sos/AuthViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/Boton_SOS/app/src/main/java/com/example/boton_sos/AuthViewModel.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Boton_SOS/app/src/main/java/com/example/boton_sos/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/Boton_SOS/app/src/main/java/com/example/boton_sos/MainActivity.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -22,7 +22,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\Users\ninan\.android\avd\Medium_Phone_API_35.avd)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=PhysicalDevice, isTemplate=false, identifier=serial=R5CX70GM98V)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$/Boton_SOS">
       <ProjectState />
@@ -34,27 +34,30 @@
         <task path="$PROJECT_DIR$/app">
           <activation />
         </task>
+        <task path="$PROJECT_DIR$/Boton_SOS/app">
+          <activation />
+        </task>
         <projects_view>
           <tree_state>
             <expand>
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="ejemplos compose" type="f1a62948:ProjectNode" />
+                <item name="Boton_SOS" type="f1a62948:ProjectNode" />
               </path>
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="ejemplos compose" type="f1a62948:ProjectNode" />
+                <item name="Boton_SOS" type="f1a62948:ProjectNode" />
                 <item name="app" type="2d1252cf:ModuleNode" />
               </path>
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="ejemplos compose" type="f1a62948:ProjectNode" />
+                <item name="Boton_SOS" type="f1a62948:ProjectNode" />
                 <item name="app" type="2d1252cf:ModuleNode" />
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
               </path>
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="ejemplos compose" type="f1a62948:ProjectNode" />
+                <item name="Boton_SOS" type="f1a62948:ProjectNode" />
                 <item name="app" type="2d1252cf:ModuleNode" />
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
                 <item name="other" type="c8890929:TasksNode$1" />
@@ -116,7 +119,7 @@
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/ninan/OneDrive/Documentos/Escritorio/UVG/IV SEMESTRE/Plataformas Moviles/Proyecto_PlataformasMoviles",
+    "last_opened_file_path": "C:/Users/ninan/Downloads",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.17",
     "project.structure.side.proportion": "0.2",

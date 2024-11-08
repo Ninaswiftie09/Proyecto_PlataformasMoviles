@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
         if (ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
+            ) != PackageManager.PERMISSION_GRANTEDgit
         ) {
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
@@ -69,7 +69,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             Boton_SOSTheme {
                 val navController = rememberNavController()
-                AppNavigator(navController)
+                val viewModel: AuthViewModel = viewModel()
+
+                AppNavigator(navController = navController, viewModel = viewModel)
             }
         }
     }
@@ -77,14 +79,14 @@ class MainActivity : ComponentActivity() {
 
 // AppNavigator: Configura el flujo de navegación entre pantallas
 @Composable
-fun AppNavigator(navController: NavHostController) {
+fun AppNavigator(navController: NavHostController, viewModel: AuthViewModel) {
     NavHost(navController = navController, startDestination = "welcome_screen") {
         composable("welcome_screen") { WelcomeScreen(navController) }
         composable("login_screen") { LoginScreen(navController) }
         composable("help_screen") { HelpScreen(navController) }
         composable("info_screen") { InfoScreen(navController) }
         composable("register_screen") { RegisterScreen(navController) }
-        composable("emergency_numbers_screen") { EmergencyNumbersScreen(navController) }
+        composable("emergency_numbers_screen") { EmergencyNumbersScreen(navController, viewModel) }
         composable("hospitals_screen") { HospitalsScreen(navController) }
     }
 }
@@ -491,11 +493,13 @@ fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel = 
 
 // InfoScreen: Pantalla de información de la cuenta
 @Composable
-fun InfoScreen(navController: NavHostController) {
+fun InfoScreen(navController: NavHostController, viewModel: AuthViewModel = viewModel()) {
+    val userInfo by viewModel.userInfo.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFB71C1C))
+            .background(Color(0xFFB32222))
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -511,33 +515,62 @@ fun InfoScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = "Aquí va la información del usuario.",
-            fontSize = 20.sp,
-            color = Color.White,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 16.dp)
+        // Muestra los datos detalladamente
+        userInfo?.let { data ->
+            val nombre = data["nombre"] as? String ?: "Desconocido"
+            val tipoDeSangre = data["tipoDeSangre"] as? String ?: "No especificado"
+            val telefono = data["telefono"] as? String ?: "No especificado"
+
+            Text(
+                text = "Nombre: $nombre",
+                fontSize = 20.sp,
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Tipo de Sangre: $tipoDeSangre",
+                fontSize = 20.sp,
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Teléfono: $telefono",
+                fontSize = 20.sp,
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+        } ?: Text(
+            text = "Cargando datos...",
+            color = Color.White
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
         Button(
             onClick = { navController.navigate("help_screen") },
-            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black),
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
-                .border(2.dp, Color.White, shape = RoundedCornerShape(8.dp)),
+                .border(2.dp, Color.Red, shape = RoundedCornerShape(8.dp)),
             shape = RoundedCornerShape(8.dp)
         ) {
-            Text(text = "Regresar", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Text(text = "Regresar", color = Color.Black, fontSize = 18.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
 
 // EmergencyNumbersScreen: Pantalla de números de emergencia
 @Composable
-fun EmergencyNumbersScreen(navController: NavHostController) {
+fun EmergencyNumbersScreen(navController: NavHostController, viewModel: AuthViewModel) {
+    val userInfo by viewModel.userInfo.collectAsState()
+
+    // Lista de números de emergencia predefinidos
     val emergencyNumbers = listOf(
         "Policía: 110",
         "Bomberos: 123",
@@ -563,23 +596,76 @@ fun EmergencyNumbersScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.Black.copy(alpha = 0.7f), shape = RoundedCornerShape(8.dp))
-                .border(2.dp, Color.White, RoundedCornerShape(8.dp))
-                .padding(16.dp)
-        ) {
-            emergencyNumbers.forEach { number ->
+        // Título para los números predefinidos
+        Text(
+            text = "Números de Emergencia ",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            modifier = Modifier.padding(vertical = 8.dp)
+        )
+
+        // Mostrar los números de emergencia predefinidos
+        emergencyNumbers.forEach { number ->
+            Text(
+                text = number,
+                fontSize = 20.sp,
+                color = Color.White,
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Título para los contactos del usuario
+        Text(
+            text = "Contactos de emergencia",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            modifier = Modifier.padding(vertical = 8.dp)
+        )
+
+        // Muestra los contactos de emergencia detalladamente
+        userInfo?.let { data ->
+            val emergencia1 = data["emergencia1"] as? Map<String, String>
+            val emergencia2 = data["emergencia2"] as? Map<String, String>
+
+            emergencia1?.let {
                 Text(
-                    text = number,
-                    fontSize = 22.sp,
+                    text = "Contacto de Emergencia 1: ${it["nombre"]}",
+                    fontSize = 20.sp,
                     color = Color.White,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
+                Text(
+                    text = "Teléfono: ${it["numero"]}",
+                    fontSize = 18.sp,
+                    color = Color.White,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
             }
-        }
+
+            emergencia2?.let {
+                Text(
+                    text = "Contacto de Emergencia 2: ${it["nombre"]}",
+                    fontSize = 20.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+                Text(
+                    text = "Teléfono: ${it["numero"]}",
+                    fontSize = 18.sp,
+                    color = Color.White,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+        } ?: Text(
+            text = "Cargando datos...",
+            color = Color.White
+        )
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -596,6 +682,7 @@ fun EmergencyNumbersScreen(navController: NavHostController) {
         }
     }
 }
+
 
 //HopitalsScreen: pantalla para mostrar los hospitales
 @Composable
