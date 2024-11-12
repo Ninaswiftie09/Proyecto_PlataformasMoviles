@@ -1,15 +1,14 @@
 package com.example.boton_sos
 
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.AuthResult
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import com.google.firebase.auth.AuthResult
 import android.util.Log
-
 
 class AuthViewModel(private val repository: AuthRepository = AuthRepository()) : ViewModel() {
 
@@ -26,6 +25,7 @@ class AuthViewModel(private val repository: AuthRepository = AuthRepository()) :
             result.onSuccess { authResult ->
                 val uid = authResult.user?.uid
                 if (uid != null) {
+                    fetchUserData(uid)
                     onSuccess(uid)
                 }
             }
@@ -60,6 +60,7 @@ class AuthViewModel(private val repository: AuthRepository = AuthRepository()) :
         db.collection("usuarios").document(uid).set(user)
             .addOnSuccessListener {
                 Log.d("Firestore", "Datos de usuario guardados con éxito")
+                fetchUserData(uid) // Actualiza los datos del usuario
             }
             .addOnFailureListener { e ->
                 Log.e("FirestoreError", "Error al guardar datos de usuario: ${e.message}")

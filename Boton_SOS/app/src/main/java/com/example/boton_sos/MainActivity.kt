@@ -40,6 +40,8 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import android.annotation.SuppressLint
 import androidx.activity.compose.rememberLauncherForActivityResult
+import android.content.pm.PackageManager.PERMISSION_GRANTED
+
 
 
 
@@ -61,17 +63,16 @@ class MainActivity : ComponentActivity() {
         if (ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTEDgit
+            ) != PackageManager.PERMISSION_GRANTED
         ) {
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
 
         setContent {
+            val viewModel: AuthViewModel = viewModel()
             Boton_SOSTheme {
                 val navController = rememberNavController()
-                val viewModel: AuthViewModel = viewModel()
-
-                AppNavigator(navController = navController, viewModel = viewModel)
+                AppNavigator(navController, viewModel)
             }
         }
     }
@@ -82,13 +83,14 @@ class MainActivity : ComponentActivity() {
 fun AppNavigator(navController: NavHostController, viewModel: AuthViewModel) {
     NavHost(navController = navController, startDestination = "welcome_screen") {
         composable("welcome_screen") { WelcomeScreen(navController) }
-        composable("login_screen") { LoginScreen(navController) }
+        composable("login_screen") { LoginScreen(navController, viewModel) }
         composable("help_screen") { HelpScreen(navController) }
-        composable("info_screen") { InfoScreen(navController) }
-        composable("register_screen") { RegisterScreen(navController) }
+        composable("info_screen") { InfoScreen(navController, viewModel) }
+        composable("register_screen") { RegisterScreen(navController, viewModel) }
         composable("emergency_numbers_screen") { EmergencyNumbersScreen(navController, viewModel) }
         composable("hospitals_screen") { HospitalsScreen(navController) }
     }
+
 }
 
 // WelcomeScreen: Pantalla de bienvenida, que lleva a login
@@ -137,7 +139,16 @@ fun LoginScreen(navController: NavHostController, viewModel: AuthViewModel = vie
     LaunchedEffect(authResult) {
         authResult?.let {
             if (it.isSuccess) {
-                navController.navigate("help_screen")
+                val uid = it.getOrNull()?.user?.uid
+                if (uid != null) {
+                    viewModel.fetchUserData(uid)
+                    // Esperar hasta que userInfo no sea null
+                    viewModel.userInfo.collect { userInfo ->
+                        if (userInfo != null) {
+                            navController.navigate("help_screen")
+                        }
+                    }
+                }
                 viewModel.clearAuthResult()
             }
         }
@@ -565,7 +576,7 @@ fun InfoScreen(navController: NavHostController, viewModel: AuthViewModel = view
     }
 }
 
-// EmergencyNumbersScreen: Pantalla de números de emergencia
+
 @Composable
 fun EmergencyNumbersScreen(navController: NavHostController, viewModel: AuthViewModel) {
     val userInfo by viewModel.userInfo.collectAsState()
