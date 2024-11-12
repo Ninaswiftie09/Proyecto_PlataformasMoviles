@@ -644,7 +644,7 @@ fun EmergencyNumbersScreen(navController: NavHostController, viewModel: AuthView
 
             emergencia1?.let {
                 Text(
-                    text = "Contacto de Emergencia 1: ${it["nombre"]}",
+                    text = " ${it["nombre"]}",
                     fontSize = 20.sp,
                     color = Color.White,
                     fontWeight = FontWeight.SemiBold,
@@ -660,7 +660,7 @@ fun EmergencyNumbersScreen(navController: NavHostController, viewModel: AuthView
 
             emergencia2?.let {
                 Text(
-                    text = "Contacto de Emergencia 2: ${it["nombre"]}",
+                    text = " ${it["nombre"]}",
                     fontSize = 20.sp,
                     color = Color.White,
                     fontWeight = FontWeight.SemiBold,
