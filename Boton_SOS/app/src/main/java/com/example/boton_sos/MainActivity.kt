@@ -698,127 +698,141 @@ fun EmergencyNumbersScreen(navController: NavHostController, viewModel: AuthView
 //HopitalsScreen: pantalla para mostrar los hospitales
 @Composable
 fun HospitalsScreen(navController: NavHostController) {
-    var searchQuery by remember { mutableStateOf("") }
     var hospitalsList by remember { mutableStateOf(listOf<String>()) }
     var connectionError by remember { mutableStateOf(false) }
-    var latitude by remember { mutableStateOf("Unknown") }
-    var longitude by remember { mutableStateOf("Unknown") }
+    var isLoading by remember { mutableStateOf(true) }
+    var latitude by remember { mutableStateOf("") }
+    var longitude by remember { mutableStateOf("") }
     val context = LocalContext.current
     val hospitalsApiClient = HospitalsApiClient(context)
 
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
+    // Función para obtener los hospitales
+    fun fetchHospitals(
+        lat: String,
+        lon: String,
+        client: HospitalsApiClient,
+        onResult: (List<String>?, Boolean) -> Unit
+    ) {
+        client.fetchNearbyHospitals(lat = lat.toDouble(), lon = lon.toDouble()) { jsonResponse ->
+            if (jsonResponse != null) {
+                val hospitals = processHospitalsResponse(jsonResponse).take(5) // Se toman los primeros 5
+                onResult(hospitals, false)
+            } else {
+                onResult(null, true)
+            }
+        }
+    }
+
     val requestPermissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()) { isGranted ->
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
         if (isGranted) {
             getLocation(fusedLocationClient) { lat, lon ->
                 latitude = lat
                 longitude = lon
-                if (searchQuery.isNotEmpty()) {
-                    hospitalsApiClient.fetchNearbyHospitals(lat = latitude.toDouble(), lon = longitude.toDouble()) { jsonResponse ->
-                        if (jsonResponse != null) {
-                            hospitalsList = processHospitalsResponse(jsonResponse, searchQuery)
-                            connectionError = false
-                        } else {
-                            connectionError = true
-                            hospitalsList = listOf()
-                        }
+                fetchHospitals(latitude, longitude, hospitalsApiClient) { hospitals, error ->
+                    if (hospitals != null) {
+                        hospitalsList = hospitals
+                        connectionError = false
+                    } else {
+                        hospitalsList = listOf()
+                        connectionError = true
                     }
+                    isLoading = false
                 }
             }
         } else {
-            latitude = "Permission Denied"
-            longitude = "Permission Denied"
+            // Permiso denegado
+            isLoading = false
+            connectionError = true
         }
     }
 
+
+    LaunchedEffect(Unit) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            getLocation(fusedLocationClient) { lat, lon ->
+                latitude = lat
+                longitude = lon
+                fetchHospitals(latitude, longitude, hospitalsApiClient) { hospitals, error ->
+                    if (hospitals != null) {
+                        hospitalsList = hospitals
+                        connectionError = false
+                    } else {
+                        hospitalsList = listOf()
+                        connectionError = true
+                    }
+                    isLoading = false
+                }
+            }
+        } else {
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+    }
+
+    // Interfaz de usuario
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFB71C1C))
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Top
-        ) {
-            Text(
-                text = "Hospitales Cercanos",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                modifier = Modifier.padding(bottom = 16.dp)
+        if (isLoading) {
+            // Mostrar indicador de carga
+            CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.Center),
+                color = Color.White
             )
-
-            TextField(
-                value = searchQuery,
-                onValueChange = { query ->
-                    searchQuery = query
-                    if (query.isNotEmpty() && latitude != "Unknown" && longitude != "Unknown") {
-                        hospitalsApiClient.fetchNearbyHospitals(lat = latitude.toDouble(), lon = longitude.toDouble()) { jsonResponse ->
-                            if (jsonResponse != null) {
-                                hospitalsList = processHospitalsResponse(jsonResponse, query)
-                                connectionError = false
-                            } else {
-                                connectionError = true
-                                hospitalsList = listOf()
-                            }
-                        }
-                    } else {
-                        hospitalsList = emptyList()
-                    }
-                },
-                label = { Text("Buscar Hospital", color = Color.Gray) },
+        } else {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .border(2.dp, Color.White, shape = RoundedCornerShape(8.dp))
-                    .background(Color.Black.copy(alpha = 0.7f)),
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Red,
-                    unfocusedIndicatorColor = Color.Gray,
-                    cursorColor = Color.White,
-                    textColor = Color.White
-                )
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            if (connectionError) {
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Top
+            ) {
                 Text(
-                    text = "No hay conexión a internet",
-                    color = Color.Yellow,
-                    fontSize = 18.sp,
+                    text = "Hospitales Cercanos",
+                    fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
-            }
-
-            hospitalsList.forEach { hospital ->
-                Text(
-                    text = hospital,
-                    fontSize = 20.sp,
                     color = Color.White,
-                    modifier = Modifier
-                        .padding(vertical = 4.dp)
-                        .background(Color.Black.copy(alpha = 0.7f), shape = RoundedCornerShape(4.dp))
-                        .fillMaxWidth()
-                        .padding(8.dp)
+                    modifier = Modifier.padding(bottom = 16.dp)
                 )
-            }
-        }
-    }
 
-    LaunchedEffect(Unit) {
-        when (PackageManager.PERMISSION_GRANTED) {
-            ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                getLocation(fusedLocationClient) { lat, lon ->
-                    latitude = lat
-                    longitude = lon
+                if (connectionError) {
+                    Text(
+                        text = "No se pudo obtener los hospitales",
+                        color = Color.Yellow,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                } else if (hospitalsList.isEmpty()) {
+                    Text(
+                        text = "No se encontraron hospitales cercanos",
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                } else {
+                    // Mostrar la lista de hospitales
+                    hospitalsList.forEach { hospital ->
+                        Text(
+                            text = hospital,
+                            fontSize = 20.sp,
+                            color = Color.White,
+                            modifier = Modifier
+                                .padding(vertical = 4.dp)
+                                .background(
+                                    Color.Black.copy(alpha = 0.7f),
+                                    shape = RoundedCornerShape(4.dp)
+                                )
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                        )
+                    }
                 }
-            }
-            else -> {
-                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             }
         }
     }
@@ -835,22 +849,20 @@ private fun getLocation(
         } else {
             onLocationResult("No location found", "No location found")
         }
+    }.addOnFailureListener {
+        onLocationResult("No location found", "No location found")
     }
 }
 
-
-fun processHospitalsResponse(jsonResponse: String, query: String): List<String> {
+fun processHospitalsResponse(jsonResponse: String): List<String> {
     val hospitals = mutableListOf<String>()
     val jsonArray = JSONObject(jsonResponse).getJSONArray("elements")
     for (i in 0 until jsonArray.length()) {
         val element = jsonArray.getJSONObject(i)
         val tags = element.getJSONObject("tags")
         val name = tags.optString("name", "Hospital sin nombre")
-
-
-        if (name.contains(query, ignoreCase = true)) {
-            hospitals.add(name)
-        }
+        hospitals.add(name)
     }
     return hospitals
 }
+
