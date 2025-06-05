@@ -10,4 +10,4 @@ Este repositorio contiene el código y los documentos relacionados con el proyec
 
 - **Nina Nájera** - 231088
 - **Mishell Ciprian** - 231169
-- **José Rodríguez** - 21060
+
